@@ -16,33 +16,29 @@ def min_distance(whomst, call):
     word1 = []
     word2 = []
     for char in whomst:
-        word1.append(char)  #split first word into array of chars
-    for char in call:  #split second word into array of chars
+        word1.append(char) 
+    for char in call: 
         word2.append(char)
-    j = 0  # minimum distance counter
-    i = 0  # position of letter in word
-    if abs(len(word1) - len(word2)
-           ) >= 2:  #if the words are completely different, there isn't a typo
+    j = 0 
+    i = 0 
+    if abs(len(word1) - len(word2)) >= 2: 
         return 0
     else:
-        while (i < len(word2)) and (
-                i < len(word1)):  #until we reach the end of the shortest word
-            if word1[i] != word2[
-                    i]:  #if the character at the same position in the two words isnt the same,
-                j = j + 1  #then increment j
-            i = i + 1  #onto the next character
-        if j != 0 and j <= 2:  #if the words are neither the same nor wildly different,
-            return 1  #there is a typo
+        while (i < len(word2)) and (i < len(word1)): 
+            if word1[i] != word2[i]:  
+                j = j + 1  
+            i = i + 1 
+        if j != 0 and j <= 2: 
+            return 1  
         else:
-            return 0  #otherwise there isn't a typo
+            return 0 
 
 def check_for_typo(message):
-    splitMsg = str.split(message)  #split discord message into words
-    manName = splitMsg[0] + " " + splitMsg[
-        1]  #name of the man is the first two words
+    splitMsg = str.split(message) 
+    manName = splitMsg[0] + " " + splitMsg[1] 
     for i in men:
       if i != "HU GE":
-        output = min_distance(i, manName)  #check
+        output = min_distance(i, manName)
         if output == 1:
             fileObj = open("images/hornyJail.txt", "r")
             images = fileObj.readlines()
@@ -50,7 +46,7 @@ def check_for_typo(message):
             jc = images[j] + " too thirsty to spell, huh "
             return (jc)
 
-def get_man(name, mention, jc):  #retrieve man image
+def get_man(name, mention, jc,x):
     k = men[name][0]["filename"]
     callCounter = int(men[name][0]["called"])
     comp1 =  callCounter
@@ -69,25 +65,27 @@ def get_man(name, mention, jc):  #retrieve man image
     jc.append(images[i])  
     fileObj.close()  
 
-    if j == 1 and k == "images/gjImages.txt":
+    if x !=1:
+
+      if j == 1 and k == "images/gjImages.txt":
         jc.append(" " + mention + " " + str.lower(name) +" says WUHU to you!!! :smiling_face_with_3_hearts::musical_note::notes:")
         uwuCounter = int(men[name][0]["uwued"])
         uwuCounter = uwuCounter + 1
         men[name][0]["uwued"] = men[name][0]["uwued"].replace(men[name][0]["uwued"], str(uwuCounter))
 
-    if j == 1 and k != "images/gjImages.txt":
+      if j == 1 and k != "images/gjImages.txt":
         jc.append(" " + mention + " " + str.lower(name) + " says uwu to you!!! :smiling_face_with_3_hearts:")
         uwuCounter = int(men[name][0]["uwued"])
         uwuCounter = uwuCounter + 1
         men[name][0]["uwued"] = men[name][0]["uwued"].replace(men[name][0]["uwued"], str(uwuCounter))
 
-    if rr == 69:  #return rickroll if rr==69
+      if rr == 69:  #return rickroll if rr==69
         jc.append("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
         rrCounter = int(men[name][0]["rickrolled"])
         rrCounter = rrCounter + 1
         men[name][0]["rickrolled"] = men[name][0]["rickrolled"].replace(men[name][0]["rickrolled"], str(rrCounter))
 
-    if rr == 1:
+      if rr == 1:
         jc.append("https://www.youtube.com/watch?v=Pwdr8Q_wjBI&ab" +" you've been WUHUED!!!")
         rrCounter = int(men[name][0]["rickrolled"])
         rrCounter = rrCounter + 1
@@ -121,13 +119,20 @@ def user_favorites(bro,mention,manbotIcon):
          jc = [embedVar]
       return(jc)
 
-#def remove_favorites(bro,url):
-#      print(url)
-#      manbotUsers[str(bro)][0]["favorites"].remove(url)
-#      with open('users.json', 'w') as outfile:
-#        json.dump(manbotUsers, outfile)
-#        return
-          
+def remove_favorites(bro,url,mention,manbotIcon):
+      x = manbotUsers[str(bro)][0]["favorites"]
+      temp = []
+      for i in x:
+        if i != url:
+          temp.append(i)
+      manbotUsers[str(bro)][0]["favorites"] = temp
+      with open('users.json', 'w') as outfile:
+        json.dump(manbotUsers, outfile)
+      embed = discord.Embed(title="FAVORITE REMOVED", description=mention, color=0x7800b4)
+      embed.add_field(name="He's gone", value="You have successfully removed this image from your favorites list. React to this message to add it back.", inline=False)
+      embed.set_author(name="el's manbot", icon_url=manbotIcon)
+      embed.set_image(url=url)
+      return(embed)
 
 def user_checker(sender):
   sender = str(sender)
@@ -153,7 +158,6 @@ def user_remover(sender):
         with open('users.json', 'w') as outfile:
           json.dump(manbotUsers, outfile)
   return
-
 
 def timeout_message(mention):
   jc = discord.Embed(title="TIMED OUT",description=mention,color=0x7800b4)
@@ -220,28 +224,25 @@ async def on_message(message):
         if i in userMessage:
           man_tracker(message.author.id,i)
           mess = []
-          jc = get_man(i, mention, mess)
-
-    if message.content.startswith('MANBOT GEGE'):
-        menNames = []
-        for i in men:
-            menNames.append(i)
-            i = random.choice(menNames)
-            jc = []
-        man_tracker(message.author.id,i)
-        jc = get_man(i, mention, jc)
+          jc = get_man(i, mention, mess,0)
     
     if message.content.startswith('MANBOT RANDOM'):
         menNames = []
         for i in men:
             menNames.append(i)
-            i = random.choice(menNames)
-            jc = []
+        i = random.choice(menNames)
+        jc = []
         man_tracker(message.author.id,i)
-        jc = get_man(i, mention, jc)
+        temp = get_man(i, mention, jc,1)
+
+        embedVar = discord.Embed(title="MANBOT RANDOM",description=mention,color=0x7800b4)
+        embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
+        embedVar.set_image(url=temp[0])
+        embedVar.set_footer(text="You summoned "+ str.upper(i))
+        jc = embedVar
 
     if message.content.startswith('MANBOT MEN'):
-      embedVar = discord.Embed(title="MANBOT MEN", description="To summon a man, include his full name in capital letters anywhere in your message. Manbot has the following men:", color=0x7800b4)
+      embedVar = discord.Embed(title="MANBOT MEN", description="To summon a man, include his full name in capital letters anywhere in your message. Want a new man in Manbot or more pictures for an existing man? Fill out this form [here](https://forms.gle/ZZebbBqTxhfD5zTb8).\n\nManbot currently has the following men:", color=0x7800b4)
       menList = []
       countList = []
       for i in men:
@@ -260,8 +261,8 @@ async def on_message(message):
       embedVar = discord.Embed(title="MANBOT STATS", description="Manbot started counting stats on 25 April 2021. Manbot is in " + str(len(client.guilds)) + " thirsty, thirsty servers!", color=0x7800b4)
       embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
 
-     # async for guild in client.fetch_guilds(limit=150):
-     #   print(guild.name)
+    #    for guild in client.guilds:
+      #    print(guild.name)
  
       for i in men:
         j = man_stats(i)
@@ -288,7 +289,7 @@ async def on_message(message):
         splitStat = manStat.split(" ")
         embed.add_field(name=splitStat[0]+" "+splitStat[1],value="Called by you "+splitStat[2]+" time(s).",inline=True)
         jc = embed
-    
+
     if message.content.startswith('MANBOT FAVES'):
       jc = user_favorites(message.author.id,mention,manbotIcon)
       page = 0
@@ -297,14 +298,15 @@ async def on_message(message):
         embedVar = discord.Embed(title="YOUR FAVORITES", description=mention, color=0x7800b4)
         embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
         embedVar.set_image(url=jc[0][0])
-        embedVar.set_footer(text="1/"+str(len(jc[0])))
+        embedVar.set_footer(text="1/"+str(len(jc[0]))+ "\nReact to any favorited image with 💔 to remove it from your favorites list.")
         msg = await message.channel.send(embed=embedVar)
+        messId = msg.id
         if len(jc[0]) > 1:
           for emoji in arrows:
              await msg.add_reaction(emoji)
         await asyncio.sleep(1)
         def check(reaction, user):
-            return user == senderNOID and (str(reaction.emoji) == '⬅️' or str(reaction.emoji) == "➡️")
+            return user == senderNOID and (str(reaction.emoji) == '⬅️' or str(reaction.emoji) == "➡️" or str(reaction.emoji) == "💔")
         x = 0
         while x == 0:       
           try:
@@ -312,31 +314,33 @@ async def on_message(message):
           except asyncio.TimeoutError:
             x = 1
             return
-          if str(reaction.emoji) == '⬅️':
+          if (str(reaction.emoji) == '⬅️') and (reaction.message.id==messId):
                if (page == 0):
                  page = (len(jc[0])-1)
                else:
                  page = page - 1
                embedVar.set_image(url=jc[0][page])
-               embedVar.set_footer(text=str(page+1)+"/"+str(len(jc[0])))
+               embedVar.set_footer(text=str(page+1)+"/"+str(len(jc[0]))+ "\nReact to any favorited image with 💔 to remove it from your favorites list.")
                await msg.edit(embed=embedVar)
-          if str(reaction.emoji) == '➡️':
+          if (str(reaction.emoji) == '➡️') and (reaction.message.id==messId):
               if page == (len(jc[0])-1):
                 page = 0
               else:
                 page = page + 1
               embedVar.set_image(url=jc[0][page])
-              embedVar.set_footer(text=str(page+1)+"/"+str(len(jc[0])))
+              embedVar.set_footer(text=str(page+1)+"/"+str(len(jc[0]))+ "\nReact to any favorited image with 💔 to remove it from your favorites list.")
               await msg.edit(embed=embedVar)
-        #  if str(reaction.emoji) == '💔':
-        #       remove_favorites(sender,str(jc[0][page]))
+          if (str(reaction.emoji) == '💔') and (reaction.message.id==messId):
+           jc =  remove_favorites(sender,str(jc[0][page]),mention,manbotIcon)
+           await message.channel.send(embed=jc)
+            
 
     if message.content.startswith("MANBOT ERASE MY DATA"):
-
       hontou = embedVar = discord.Embed(title="ERASE MY DATA", description=mention, color=0x7800b4)
       hontou.add_field(name="Are you sure? This action cannot be undone.",value="React with 🗑️ (wastebasket) to delete your data")
       hontou.set_author(name="el's manbot", icon_url=manbotIcon)
       hontou = await message.channel.send(embed=hontou)
+      messId = hontou.id
       def check(reaction, user):
          return user == senderNOID and (str(reaction.emoji) == "🗑️")
       try:
@@ -347,7 +351,9 @@ async def on_message(message):
          await message.channel.send(embed=jc)
          return
 
-      if str(reaction.emoji) == "🗑️":
+      print(messId)
+      print(reaction.message.id)
+      if (str(reaction.emoji) == "🗑️") and (reaction.message.id == messId):
         if str(sender) in manbotUsers:
            del manbotUsers[str(sender)]
            with open('users.json', 'w') as outfile:
@@ -365,17 +371,31 @@ async def on_message(message):
       fileObj.close() 
       jc.append("Hey! "+sleepy[i])
 
+    if message.content.startswith('MANBOT SEND MAN ADDED MESSAGE') and message.author.id == 262822280357216257:
+      #format: MANBOT SEND MAN ADDED MESSAGE 262822280357216257 YAN YUJIN
+      splitStr = str.split(message.content)
+      leng = len(splitStr)
+      man = splitStr[leng-2] + " "+ splitStr[leng-1]
+      print(man)
+      id = splitStr[leng-3]
+      mention = int(id)
+      sendto = await client.fetch_user(mention)
+      print(sendto)
+      await sendto.send("As per your request, " + man + " is now summonable in Manbot. Thanks for requesting him! Any replies sent to this message will not be seen.")
+      jc = "message sent"
+
     if message.content.startswith('MANBOT HELP'):
         embedVar = discord.Embed(title="MANBOT HELP", description="*Preface all the following commands with MANBOT to use them.*", color=0x7800b4)
         embedVar.add_field(name="HELP", value="View Manbot's help menu. You're here right now!", inline=False)
         embedVar.add_field(name="MEN", value="View all currently summonable men. To summon a man, include his full name in capital letters anywhere in your message.", inline=False)
         embedVar.add_field(name="RANDOM", value="Summon a random man.", inline=False)
-        embedVar.add_field(name="FAVES", value="View a gallery of your favorite images. React to any manbot image to add it to your favorites list. Favorites cannot currently be removed.", inline=False)
+        embedVar.add_field(name="FAVES", value="View a gallery of your favorite images. React to any manbot image to add it to your favorites list. ", inline=False)
         embedVar.add_field(name="STATS", value="View pan-server bot stats.", inline=False)
         embedVar.add_field(name="MY STATS", value="View your individual stats.", inline=False)
         embedVar.add_field(name="SLEEP", value="Have Manbot send a bedtime reminder.", inline=False)
         embedVar.add_field(name="ERASE MY DATA", value="Erase ALL your Manbot data (this action cannot be undone!)", inline=False)
         embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
+        embedVar.set_footer(text="UPDATE 16 JUNE 2021: Favorited images can now be removed. Want Manbot in your server? Invite Manbot here: https://top.gg/bot/829189738387734530")
         jc = embedVar
 
     user_remover(sender)
@@ -394,24 +414,39 @@ async def on_message(message):
 @client.event
 async def on_reaction_add(reaction, user):
     if ((reaction.message.author.id == 829189738387734530) or (reaction.message.author.id == 836346113731592262)):
-        async for user in reaction.users():
-          if "http" in reaction.message.content:
-            myId = str(user.id)
-            if myId in manbotUsers:
-              manbotUsers[myId][0]["favorites"].append(reaction.message.content)
-              with open('users.json', 'w') as outfile:
-               json.dump(manbotUsers, outfile)
-            else:
-              data = {}
-              data[myId] = []
-              data[myId].append({"favorites":[]})
-              data[myId][0]["favorites"].append(reaction.message.content)
-              data[myId].append({"call tracker":[]})
-              temp = manbotUsers
-              temp.update(data)
-              with open('users.json', 'w') as outfile:
-                json.dump(temp, outfile)
+        users = await reaction.users().flatten()
+        count = reaction.count
+        itsMe = users[count-1]
 
+        async for user in reaction.users():
+            myId = str(itsMe.id)
+            fave = ""
+            if "http" in reaction.message.content:
+              fave = reaction.message.content
+            else:
+              if len(reaction.message.embeds) == 1:
+                if (reaction.message.embeds[0].title =="MANBOT RANDOM") or (reaction.message.embeds[0].title =="FAVORITE REMOVED"):
+                  fave = reaction.message.embeds[0].image.url
+            if myId in manbotUsers:
+              if fave != "":
+                manbotUsers[myId][0]["favorites"].append(fave)
+                with open('users.json', 'w') as outfile:
+                  json.dump(manbotUsers, outfile)
+                  return
+              return
+            else:
+              if (myId != str(829189738387734530)) and (myId != str(836346113731592262)):
+                data = {}
+                data[myId] = []
+                data[myId].append({"favorites":[]})
+                if fave != "":
+                  data[myId][0]["favorites"].append(fave)
+                data[myId].append({"call tracker":[]})
+                temp = manbotUsers
+                temp.update(data)
+                with open('users.json', 'w') as outfile:
+                  json.dump(temp, outfile)
+                  return
 
 keep_alive()
 client.run(os.getenv('TOKEN'))

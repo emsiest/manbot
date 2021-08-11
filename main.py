@@ -4,8 +4,10 @@ import random
 import json
 import re
 import asyncio
+from contextlib import suppress
 
 client = discord.Client()
+
 with open('men.json') as f:
     men = json.load(f)
 with open('users.json') as f:
@@ -35,7 +37,8 @@ def min_distance(whomst, call):
             return 0 
 
 def check_for_typo(message):
-    splitMsg = str.split(message) 
+  splitMsg = str.split(message) 
+  if len(splitMsg) != 1:
     manName = splitMsg[0] + " " + splitMsg[1] 
     for i in men:
       if i != "HU GE":
@@ -49,6 +52,7 @@ def check_for_typo(message):
 
 def get_man(name, mention, jc,x):
     k = men[name][0]["filename"]
+    c = men[name][0]["category"]
     callCounter = int(men[name][0]["called"])
     comp1 =  callCounter
     callCounter = callCounter + 1
@@ -86,7 +90,13 @@ def get_man(name, mention, jc,x):
         rrCounter = rrCounter + 1
         men[name][0]["rickrolled"] = men[name][0]["rickrolled"].replace(men[name][0]["rickrolled"], str(rrCounter))
 
-      if rr == 1:
+      if rr == 8 and c == "Kpop":
+        jc.append("https://youtu.be/8NjDYw_T6Ao" + " you've been JJONGED!!!")
+        rrCounter = int(men[name][0]["rickrolled"])
+        rrCounter = rrCounter + 1
+        men[name][0]["rickrolled"] = men[name][0]["rickrolled"].replace(men[name][0]["rickrolled"], str(rrCounter))
+
+      if rr == 1 and (c == "Cdrama (actor)" or c == "Cdrama (character)"):
         jc.append("https://www.youtube.com/watch?v=Pwdr8Q_wjBI&ab" +" you've been WUHUED!!!")
         rrCounter = int(men[name][0]["rickrolled"])
         rrCounter = rrCounter + 1
@@ -243,26 +253,34 @@ async def on_message(message):
         if i in userMessage:
             man_tracker(message.author.id,i)
             mess = []
-            if not userMessage.startswith("MANBOT STATS"):
+            if not (userMessage.startswith("MANBOT STATS") or userMessage.startswith("MANBOT ENABLE") or userMessage.startswith("MANBOT DISABLE")):
               jc = get_man(i, mention, mess,0)
             if userMessage.startswith("MANBOT STATS "):
               jc = get_man(i, mention, mess,1)
               man = man_stats_2(i)
-
+              sortMen = []
+              for j in men:
+                sortMen.append([j,man_stats_2(j)])
+              sortMen = sorted(sortMen, key=lambda x: x[1][0], reverse=True)
+              calls = str(man[0])
+              uwus = str(man[2])
+              rickrolls = str(man[1])
+              searchMan = [i,man]
+              rank = sortMen.index(searchMan) + 1
+              
               embedVar = discord.Embed(title=i,description=mention,color=0x7800b4)
               embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
               embedVar.set_image(url=jc[0])
-              embedVar.add_field(name="WHO'S HE?", value=men[i][0]["description"],inline=False)
-              calls = str(man[0])
-              uwus = str(man[1])
-              rickrolls = str(man[2])
+              embedVar.add_field(name="WHO'S HE?", value=men[i][0]["description"] + "\nCategory: " + men[i][0]["category"],inline=False)
               j = "Called by users** " + calls + " **times\n Rickrolled users** " + rickrolls + " **times\n Uwued users **" + uwus + " **times"
-              embedVar.add_field(name=i, value=j,inline=True)
+              embedVar.add_field(name="STATS", value=j,inline=False)
+              embedVar.add_field(name="RANKED #"+str(rank) + " IN MANBOT", value="_This rank is cumulative across all of Manbot's servers._",inline=False)
               jc= embedVar
 
     if message.content.startswith("MANBOT DISABLE"):
        categoryTuple = message.content.rpartition(" DISABLE ")
        x = 0
+       count = 0
 
        if categoryTuple[2] == "KDRAMA (CHARACTER)":
         category = "KDC"
@@ -286,11 +304,40 @@ async def on_message(message):
             embedVar.add_field(name="SUCCESS!", value="You've successfully disabled that category.",inline=True)
             x = 1
             jc = embedVar
+            
          else:
            if x == 0 and (category in manbotCategories):
             embedVar = discord.Embed(title="HEY!",description=mention,color=0x7800b4)
             embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
             embedVar.add_field(name="HOLD IT!", value="You've already disabled that category!",inline=True)
+          
+            jc = embedVar
+
+       for i in men:
+         if str(sender) not in men[i][0]["disabled"]:
+          if category == i:
+           count = count + 1
+           if count < 30:
+            men[i][0]["disabled"].append(str(sender))
+            with open('men.json', 'w') as outfile:
+             json.dump(men, outfile)
+             embedVar = discord.Embed(title="MANBOT CATEGORIES",description=mention,color=0x7800b4)
+             embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
+             embedVar.add_field(name="SUCCESS!", value="You've successfully disabled that man.",inline=True)
+             x = 1
+             jc = embedVar
+            
+         else:
+           if x == 0 and (category in men):
+            embedVar = discord.Embed(title="HEY!",description=mention,color=0x7800b4)
+            embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
+            embedVar.add_field(name="HOLD IT!", value="You've already disabled that man!",inline=True)
+            jc = embedVar
+
+           if x == 0 and (count == 30):
+            embedVar = discord.Embed(title="HEY!",description=mention,color=0x7800b4)
+            embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
+            embedVar.add_field(name="HOLD IT!", value="You've disabled the maximum amount of men! Enable a man to disable a new one.",inline=True)
           
             jc = embedVar
 
@@ -329,12 +376,31 @@ async def on_message(message):
              embedVar.add_field(name="HOLD IT!", value="You've already enabled that category!",inline=True)
              jc = embedVar
 
+      for i in men:
+        if str(sender) in men[i][0]["disabled"]:
+         if category == i:
+           for j in men[i][0]["disabled"]:
+             if j == str(sender):
+              men[i][0]["disabled"].remove(str(sender))
+              with open('men.json', 'w') as outfile:
+                json.dump(men, outfile)
+                embedVar = discord.Embed(title="MANBOT CATEGORIES",description=mention,color=0x7800b4)
+                embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
+                embedVar.add_field(name="SUCCESS!", value="You've successfully enabled that man.",inline=True)
+                x = 1
+                jc = embedVar
+        else:
+            if x == 0 and (category in men):
+             embedVar = discord.Embed(title="HEY!",description=mention,color=0x7800b4)
+             embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
+             embedVar.add_field(name="HOLD IT!", value="You've already enabled that man!",inline=True)
+             jc = embedVar
+
     if message.content.startswith('MANBOT MY CATEGORIES'):
       embedVar = discord.Embed(title="MANBOT MY CATEGORIES",description=mention,color=0x7800b4)
       embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
 
       temp = []
-
       for i in manbotCategories:
         temp.append(i)
 
@@ -346,12 +412,41 @@ async def on_message(message):
       for i in temp:
           embedVar.add_field(name=i, value=":white_check_mark: Enabled!",inline=True)
      
-      embedVar.set_footer(text="To enable and disable categories, call MANBOT ENABLE [CATEGORY NAME] or MANBOT DISABLE [CATEGORY NAME] respectively. For example, MANBOT ENABLE ANIME enables anime for your user. KDA, CDC, KDC, CDA, stand for Kdrama (Actor), Cdrama (Character), etc.")     
+      embedVar.set_footer(text="To enable and disable categories, call MANBOT ENABLE [CATEGORY NAME] or MANBOT DISABLE [CATEGORY NAME] respectively. For example, MANBOT ENABLE ANIME enables anime for your user. KDA, CDC, KDC, CDA, stand for Kdrama (Actor), Cdrama (Character), etc. MCYT stands for Minecraft Youtube.")     
+      jc = embedVar
+
+    if message.content.startswith('MANBOT MY INACTIVE MEN'):
+      embedVar = discord.Embed(title="MANBOT MY INACTIVE MEN",description=mention,color=0x7800b4)
+      embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
+      count = 0
+     
+      sortedMans = []
+      for i in men:
+        sortedMans.append(i)
+      sortedMans.sort()
+
+      temp = ""
+      for i in sortedMans:
+        if str(sender) in men[i][0]["disabled"]:
+          temp =  temp + ":no_entry_sign: "  + i + "\n"
+          count = count + 1
+        
+      if temp == "":
+        embedVar.add_field(name="HEY!", value="You haven't disabled any men! Disable a man to see him here.",inline=True)
+       
+      else:
+        embedVar.add_field(name="INACTIVE MEN - " + str(count) + "/30", value=temp,inline=True)
+
+     
+      embedVar.set_footer(text="To enable and disable men, call MANBOT ENABLE [MAN NAME] or MANBOT DISABLE [MAN NAME] respectively. For example, MANBOT ENABLE WILBUR SOOT enables Wilbur Soot for your user.")     
       jc = embedVar
 
     if message.content.startswith('MANBOT RANDOM'):
       menNames = []
       enabledCategories = []
+      categorySplice = message.content.rpartition("RANDOM ")
+      specificCategory = ""
+
       x = 0
       for i in manbotCategories:
           if str(sender) not in manbotCategories[i][0]["disabled"]:
@@ -364,33 +459,44 @@ async def on_message(message):
             jc = embedVar
             x = 1
 
-      for i in enabledCategories:
-       if i == "KDC":
-        enabledCategories.append("KDRAMA (CHARACTER)")
-       if i == "KDA":
-        enabledCategories.append("KDRAMA (ACTOR)")
-       if i == "CDC":
-        enabledCategories.append("CDRAMA (CHARACTER)")
-       if i == "CDA":
-        enabledCategories.append("CDRAMA (ACTOR)")
-      
+      for k in manbotCategories:
+        if k.upper() == specificCategory or k.upper() == categorySplice[2]:
+            specificCategory = k
+            enabledCategories = [specificCategory]
+
       if x == 0:
-        for i in men:
-          for j in enabledCategories:
-           if men[i][0]["category"].upper() == j:
-            menNames.append(i)
-            
+       for i in enabledCategories: 
+        if i == "KDC":
+         enabledCategories.append("KDRAMA (CHARACTER)")
+        if i == "KDA":
+         enabledCategories.append("KDRAMA (ACTOR)")
+        if i == "CDC":
+         enabledCategories.append("CDRAMA (CHARACTER)")
+        if i == "CDA":
+         enabledCategories.append("CDRAMA (ACTOR)")
 
-        i = random.choice(menNames)
-        jc = []
-        man_tracker(message.author.id,i)
-        temp = get_man(i, mention, jc,1)
+       for i in men:
+          if men[i][0]["category"].upper() in enabledCategories:
+            if str(sender) not in men[i][0]["disabled"]:
+              menNames.append(i)
 
-        embedVar = discord.Embed(title="MANBOT RANDOM",description=mention,color=0x7800b4)
-        embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
-        embedVar.set_image(url=temp[0])
-        embedVar.set_footer(text="You summoned "+ str.upper(i))
-        jc = embedVar
+
+       if len(menNames) != 0:
+         i = random.choice(menNames)
+         jc = []
+         man_tracker(message.author.id,i)
+         temp = get_man(i, mention, jc,1)
+
+         embedVar = discord.Embed(title="MANBOT RANDOM",description=mention,color=0x7800b4)
+         embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
+         embedVar.set_image(url=temp[0])
+         embedVar.set_footer(text="You summoned "+ str.upper(i) + " - " + men[i][0]["category"])
+
+       else:
+         embedVar = discord.Embed(title="HEY!",description=mention,color=0x7800b4)
+         embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
+         embedVar.add_field(name="HOLD IT!", value="You've disabled all men in your enabled categories! Enable a man or category to use manbot random. Categories and men may be enabled by calling MANBOT ENABLE [CATEGORY/MAN NAME], e.g. MANBOT ENABLE ANIME or MANBOT ENABLE WILBUR SOOT.",inline=True)
+       jc = embedVar
 
     if message.content.startswith('MANBOT MEN'):
       categories = ["CDRAMA (CHARACTER)","CDRAMA (ACTOR)","KDRAMA (CHARACTER)","KDRAMA (ACTOR)","KPOP","ANIME","MCYT"]
@@ -413,7 +519,7 @@ async def on_message(message):
          embedVar.add_field(name=i, value=str(howManyMen[j])+" men in this category",inline=False)
          j = j+1
          
-        embedVar.set_footer(text="KDC, KDA, CDC, CDA may be used in place of Cdrama (Character), Kdrama (Actor), etc. For example, MANBOT MEN CDC is equivalent to MANBOT MEN CDRAMA (CHARACTER)")
+        embedVar.set_footer(text="KDC, KDA, CDC, CDA may be used in place of Cdrama (Character), Kdrama (Actor), etc. For example, MANBOT MEN CDC is equivalent to MANBOT MEN CDRAMA (CHARACTER). MCYT stands for Minecraft Youtube.")
         jc = embedVar
 
       else:
@@ -446,19 +552,21 @@ async def on_message(message):
        jc = embedVar
 
     if message.content == 'MANBOT STATS':
-      embedVar = discord.Embed(title="MANBOT STATS", description="Manbot started counting stats on 25 April 2021. Manbot is in " + str(len(client.guilds)) + " thirsty, thirsty servers! The most popular men are:", color=0x7800b4)
-      embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
-      embedVar.set_footer(text="Calll MANBOT STATS [MAN NAME] to get stats on any individual man. For example, MANBOT STATS ZHANG ZHEHAN will pull up Zhang Zhehan's stats.")
-
       sortMen = []
       for i in men:
         sortMen.append([i,man_stats_2(i)])
+
+      count = len(sortMen)
       sortMen = sorted(sortMen, key=lambda x: x[1][0], reverse=True)
+      embedVar = discord.Embed(title="MANBOT STATS", description="Manbot started counting stats on 25 April 2021. Manbot is in " + str(len(client.guilds)) + " thirsty, thirsty servers! There are " + str(count) + " men in Manbot. The most popular men are:", color=0x7800b4)
+      embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
+      embedVar.set_footer(text="Calll MANBOT STATS [MAN NAME] to get stats on any individual man. For example, MANBOT STATS ZHANG ZHEHAN will pull up Zhang Zhehan's stats.")
+      
 
       for i in range(0,9):
         calls = str(sortMen[i][1][0])
-        uwus = str(sortMen[i][1][1])
-        rickrolls = str(sortMen[i][1][2])
+        uwus = str(sortMen[i][1][2])
+        rickrolls = str(sortMen[i][1][1])
         j = "Called by users** " + calls + " **times\n Rickrolled users** " + rickrolls + " **times\n Uwued users **" + uwus + " **times"
         embedVar.add_field(name=str(i+1)+ " - " + sortMen[i][0], value=j,inline=True)
       
@@ -611,33 +719,34 @@ async def on_message(message):
       jc = sent
 
     if message.content.startswith('MANBOT HELP'):
-        embedVar = discord.Embed(title="MANBOT HELP", description="*To SUMMON A MAN, include his full name in capital letters anywhere in your message, such as 'I love ZHANG ZHEHAN!' Call any of the following commands (typing in all caps) to use them. Want Manbot in your server? Invite Manbot [here](https://top.gg/bot/829189738387734530).*", color=0x7800b4)
+        embedVar = discord.Embed(title="MANBOT HELP", description="*To SUMMON A MAN, include his full name in capital letters anywhere in your message, such as 'I love ZHANG ZHEHAN!' Call any of the following commands (typing in all caps) to use them.\n\n Want Manbot in your server? [Invite Manbot here](https://top.gg/bot/829189738387734530). Have a feature idea or feedback? Fill out [this](https://forms.gle/1jDgZM9gyqYhPD4W7) form. Want another man in manbot? Fill out [this](https://forms.gle/YtFLGMoXGirpT67Z7) form.*", color=0x7800b4)
         embedVar.add_field(name="MANBOT HELP", value="View Manbot's help menu. You're here right now!", inline=False)
         embedVar.add_field(name="MANBOT MEN", value="View all categories of currently summonable men. This command takes an optional argument of a category name, such as MANBOT MEN ANIME, to see all the men in that category.", inline=False)
-        embedVar.add_field(name="MANBOT RANDOM", value="Summon a random man. Categories of men may be enabled and disabled by calling MANBOT ENABLE [CATEGORY NAME] or MANBOT DISABLE [CATEGORY NAME].", inline=False)
-        embedVar.add_field(name="MANBOT ENABLE/DISABLE", value="Enable or disable a category in the random roulette. This command takes a required argument of a category name, such as MANBOT DISABLE KPOP, to disable or enable that category.", inline=False)
+        embedVar.add_field(name="MANBOT RANDOM", value="Summon a random man. This command takes an optional argument of a category name to summon random men in a specific category, e.g, MANBOT RANDOM ANIME will summon a random anime character.", inline=False)
+        embedVar.add_field(name="MANBOT ENABLE/DISABLE", value="Enable or disable a man or category in the random roulette. This command takes a required argument of a man or category name, such as MANBOT DISABLE KPOP, to disable or enable that man or category.", inline=False)
         embedVar.add_field(name="MANBOT MY CATEGORIES", value="View the categories you have enabled and disabled for when you call the manbot random roulette.", inline=False)
+        embedVar.add_field(name="MANBOT MY INACTIVE MEN", value="View the men you have disabled for when you call the manbot random roulette.", inline=False)
         embedVar.add_field(name="MANBOT FAVES", value="View a gallery of your favorite images. React to any manbot image to add it to your favorites list. ", inline=False)
-        embedVar.add_field(name="MANBOT STATS", value="View Manbot's top ten most popular men, as well as Manbot's most recently added man. Call your favorite man a lot of times to try and get him on the leaderboard! This command takes an optional man name argument, e.g. MANBOT STATS WANG YIBO, to see that man's individual stats and information.", inline=False)
+        embedVar.add_field(name="MANBOT STATS", value="View Manbot's top ten most popular men, as well as Manbot's most recently added man. Call your favorite man a lot of times to try and get him on the leaderboard!", inline=False)
         embedVar.add_field(name="MANBOT MY STATS", value="View your individual stats.", inline=False)
         embedVar.add_field(name="MANBOT SLEEP", value="Have Manbot send a bedtime reminder.", inline=False)
         embedVar.add_field(name="MANBOT WORK", value="Have Manbot send a work time reminder.", inline=False)
         embedVar.add_field(name="MANBOT ERASE MY DATA", value="Erase ALL your Manbot data (this action cannot be undone!)", inline=False)
         embedVar.set_author(name="el's manbot", icon_url=manbotIcon)
-        embedVar.set_footer(text="UPDATE 7 AUG 2021: Men can be disabled and enabled for users' individual manbot random roulettes on a category-by-category basis. Tired of anime in the random roulette? Don't want to see kpop? Disable it!")
+        embedVar.set_footer(text="UPDATE 10 AUG 2021: MANBOT RANDOM now takes an optional category argument to summon only men in a specific category. For example, MANBOT RANDOM KPOP will summon a random kpop man.")
         jc = embedVar
 
     user_remover(sender)
-
-    if isinstance(jc, list) == True:
+    with suppress(UnboundLocalError):
+     if isinstance(jc, list) == True:
         for i in jc:
             if isinstance(i, discord.Embed):
               await message.channel.send(embed=i)
             else:
               await message.channel.send(i)
-    elif isinstance(jc, discord.Embed):
+     elif isinstance(jc, discord.Embed):
       await message.channel.send(embed=jc)
-    else:
+     else:
         await message.channel.send(jc)
 
 @client.event

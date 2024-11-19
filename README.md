@@ -30,13 +30,9 @@ Enable or disable a man or category in the random roulette. This command takes a
 
 View the categories you have enabled and disabled for when you call the random roulette.
 
-```MANBOT MY INACTIVE MEN```
+```MANBOT MY MEN```
 
 View the men you have disabled for when you call the random roulette.
-
-```MANBOT FAVES```
-
-View a gallery of your favorite images. React to any manbot image to add it to your favorites list.
 
 ```MANBOT STATS```
 
@@ -54,15 +50,7 @@ Have Manbot send a bedtime reminder.
 
 Have Manbot send a work time reminder.
 
-```MANBOT ERASE MY DATA```
+```MANBOT RESET```
 
 Erase ALL your Manbot data (this action cannot be undone!)
 
-
-
-## Contributing
-You may submit new men to the bot [here](https://docs.google.com/forms/d/e/1FAIpQLSf_-nOxSDLTQOuYHlSdEKZQGLAZ3pHaovc6IyAX69FpObNkzg/viewform).
-Dead links, feature requests, and other feedback should be submitted [here](https://docs.google.com/forms/d/e/1FAIpQLSeNOtU9xY3Y1Tsyn0ZaDwLO8AfrlbC2pHh4_31LoX3_4dGfJg/viewform). 
-
-## License
-[MIT](https://choosealicense.com/licenses/mit/)

@@ -1,4 +1,5 @@
 import discord
+import os
 import random
 
 from discord.ext import commands
@@ -8,7 +9,7 @@ from man_commands import (get_random_embed, get_man)
 from user_commands import (get_disable_embed, get_enable_embed, get_my_categories_embed, get_my_men_embed, get_reset_embed)
 from manbot_utils import ManbotUtils
 
-TOKEN = ""
+TOKEN = os.getenv("DISCORD_TOKEN")
 APP_ID="1306706423736176710"
 URL=f"https://discord.com/api/v9/applications/{APP_ID}/commands"
 headers = {"Authorization": f"Bot {TOKEN}", "Content-Type": "application/json"}

@@ -97,6 +97,7 @@ async def on_message(message):
         return
 
     # check for typos and bonks users if typo detected
+    ManbotUtils.clean_message(message)
     has_typo = ManbotUtils.check_typo(message)
     if has_typo:
         await message.channel.send(has_typo)

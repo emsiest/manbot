@@ -1,18 +1,17 @@
 import discord
 import os
-import random
 
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from general_commands import (get_help_embed, get_list_categories_embed, get_list_men_embed, get_stats_embed)
+from general_commands import (get_help_embed, get_list_categories_embed, get_list_men_embed, get_stats_embed,
+                              get_hello_embed, get_sleep_embed, get_work_embed)
 from man_commands import (get_random_embed, get_man)
 from user_commands import (get_disable_embed, get_enable_embed, get_my_categories_embed, get_my_men_embed, get_reset_embed)
 from manbot_utils import ManbotUtils
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
-APP_ID="1306706423736176710"
 
 # bot.command will pick up messages starting with 'MANBOT'
 bot = commands.Bot(command_prefix="MANBOT ", intents=discord.Intents.all())
@@ -37,9 +36,7 @@ async def enable_command(ctx):
 
 @bot.command("HELLO")
 async def hello_command(ctx):
-    # send a random line from hello.txt
-    hello_txt = ManbotUtils.read_file("resources/hello.txt")
-    return random.choice(hello_txt) + ctx.message.author.mention + "! "
+    await ctx.send(get_hello_embed(ctx))
 
 @bot.command("HELP")
 async def help_command(ctx):
@@ -73,9 +70,7 @@ async def reset_command(ctx):
 
 @bot.command("SLEEP")
 async def sleep_command(ctx):
-    # send a random line from sleep.txt
-    sleep_txt = ManbotUtils.read_file("resources/sleep.txt")
-    return "Hey " + ctx.message.author.mention + "! " + random.choice(sleep_txt)
+    await ctx.send(get_sleep_embed(ctx))
 
 @bot.command("STATS")
 async def stats_command(ctx):
@@ -83,9 +78,7 @@ async def stats_command(ctx):
 
 @bot.command("WORK")
 async def work_command(ctx):
-    # send a random line from work.txt
-    work_txt = ManbotUtils.read_file("resources/work.txt")
-    return "Hey " + ctx.message.author.mention + "! " + random.choice(work_txt)
+    await ctx.send(get_work_embed(ctx))
 
 '''
 Message Handling

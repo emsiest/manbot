@@ -1,9 +1,11 @@
 import discord
+import random
 
 from manbot_utils import ManbotUtils
 
 '''
-Implementation for general commands: HELP, LIST CATEGORIES, LIST MEN.
+Implementation for general commands: HELP, LIST CATEGORIES, LIST MEN, 
+HELLO, SLEEP, WORK.
 '''
 
 utils = ManbotUtils()
@@ -145,3 +147,18 @@ def get_stats_embed(ctx):
 
     embed.set_footer(text="Manbot started counting stats on 25 April 2021.")
     return embed
+
+# send a random line from hello.txt
+def get_hello_embed(ctx):
+    hello_txt = ManbotUtils.read_file("resources/hello.txt")
+    return random.choice(hello_txt).strip() + " " + ctx.message.author.mention + "!"
+
+# send a random line from sleep.txt
+def get_sleep_embed(ctx):
+    sleep_txt = ManbotUtils.read_file("resources/sleep.txt")
+    return "Hey " + ctx.message.author.mention + "! " + random.choice(sleep_txt)
+
+# send a random line from work.txt
+def get_work_embed(ctx):
+    work_txt = ManbotUtils.read_file("resources/work.txt")
+    return "Hey " + ctx.message.author.mention + "! " + random.choice(work_txt)

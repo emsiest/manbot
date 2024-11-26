@@ -34,6 +34,10 @@ class TestManbotUtils(unittest.TestCase):
 		self.assertEqual(ManbotUtils.edit_dist("hello", "halo"), 2)
 		self.assertEqual(ManbotUtils.edit_dist("hello", "mallow"), 3)
 
+	def test_clean_message(self):
+		mock_message = MagicMock(content="hello??")
+		self.assertEqual(ManbotUtils.clean_message(mock_message), "hello")
+
 	def test_check_typo(self):
 		mock_message = MagicMock(content="ZANG ZEHAN")
 		self.assertTrue(ManbotUtils.check_typo(mock_message).endswith(":wink:"))

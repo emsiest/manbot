@@ -1,4 +1,5 @@
 import json
+import string
 import random
 from pathlib import Path
 
@@ -46,10 +47,14 @@ class ManbotUtils:
 			return file.readlines()
 
 	@staticmethod
+	def clean_message(message):
+		return message.content.translate(str.maketrans('', '', string.punctuation))
+
+	@staticmethod
 	# check for misspelled man names and bonk user if typo detected
 	def check_typo(message):
 		# only check first two words in the message
-		split_message = str.split(message.content)
+		split_message = str.split(ManbotUtils.clean_message(message))
 		if len(split_message) > 1:
 			message_start = split_message[0] + " " + split_message[1]
 		else:

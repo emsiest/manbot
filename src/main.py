@@ -20,7 +20,7 @@ bot = commands.Bot(command_prefix="MANBOT ", intents=discord.Intents.all())
 # called after bot is logged in 
 async def on_ready():
     # set activity status
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.custom, name="", state="He is risen!"))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.custom, name="custom", state="He is risen!"))
     print('manbot ready!')
 
 '''

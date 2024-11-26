@@ -3,16 +3,16 @@ import os
 import random
 
 from discord.ext import commands
+from dotenv import load_dotenv
 
 from general_commands import (get_help_embed, get_list_categories_embed, get_list_men_embed, get_stats_embed)
 from man_commands import (get_random_embed, get_man)
 from user_commands import (get_disable_embed, get_enable_embed, get_my_categories_embed, get_my_men_embed, get_reset_embed)
 from manbot_utils import ManbotUtils
 
+load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 APP_ID="1306706423736176710"
-URL=f"https://discord.com/api/v9/applications/{APP_ID}/commands"
-headers = {"Authorization": f"Bot {TOKEN}", "Content-Type": "application/json"}
 
 # bot.command will pick up messages starting with 'MANBOT'
 bot = commands.Bot(command_prefix="MANBOT ", intents=discord.Intents.all())

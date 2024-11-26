@@ -53,7 +53,7 @@ class ManbotUtils:
 		if len(split_message) > 1:
 			message_start = split_message[0] + " " + split_message[1]
 		else:
-			message_start = split_message[0]
+			message_start = split_message
 
 		for m in ManbotUtils.all_men.keys():
 			edit_distance = ManbotUtils.edit_dist(m, message_start)

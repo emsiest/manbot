@@ -55,7 +55,7 @@ class ManbotUtils:
 	# check for misspelled man names and bonk user if typo detected
 	def check_typo(message):
 		# only check first two words in the message
-		split_message = str.split(message.content)
+		split_message = str.split(message.content.upper())
 		if len(split_message) > 1:
 			message_start = split_message[0] + " " + split_message[1]
 		else:

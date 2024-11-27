@@ -26,6 +26,10 @@ async def on_ready():
 '''
 Command Stubs
 '''
+@bot.command(name="CATEGORIES")
+async def categories_command(ctx):
+    await ctx.send(embed=get_list_categories_embed(ctx))
+
 @bot.command(name="DISABLE")
 async def disable_command(ctx):
     await ctx.send(embed=get_disable_embed(ctx))
@@ -52,6 +56,10 @@ async def my_command(ctx):
 @bot.command("MAN")
 async def man_command(ctx):
     await ctx.send("Hey " + ctx.message.author.mention + " the correct command is MANBOT MEN <CATEGORY NAME>, e.g. MANBOT MEN ANIME.")
+
+@bot.command(name="MEN")
+async def men_command(ctx):
+    await ctx.send(embed=get_list_men_embed(ctx))
 
 @bot.command("MY")
 async def my_command(ctx):

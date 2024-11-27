@@ -19,8 +19,8 @@ def get_help_embed(ctx):
     embed.add_field(name="", value="For any broken links or suggestions, please tag Em or dm her the message link.", inline=False)
     embed.add_field(name="\nGeneral Commands:", value="", inline=False)
     embed.add_field(name="", value="`MANBOT HELP` \nView Manbot's help menu. You're here right now!", inline=False)
-    embed.add_field(name="", value="`MANBOT LIST CATEGORIES [CATEGORY NAME]` \nView all categories of currently summonable men. You may supply an optional category name to list all subcategories in that category, e.g. MANBOT MEN ANIME.",inline=False)
-    embed.add_field(name="", value="`MANBOT LIST MEN <CATEGORY NAME>` \nView names of all currently summonable men in a category. You must supply a category name to list all men in that category, e.g. MANBOT MEN KDRAMA ACTOR.",inline=False)
+    embed.add_field(name="", value="`MANBOT LIST CATEGORIES [CATEGORY NAME]` \nView all categories of currently summonable men. You may supply an optional category name to list all subcategories in that category, e.g. MANBOT LIST MEN ANIME.",inline=False)
+    embed.add_field(name="", value="`MANBOT LIST MEN <CATEGORY NAME>` \nView names of all currently summonable men in a category. You must supply a category name to list all men in that category, e.g. MANBOT LIST MEN KDRAMA ACTOR.",inline=False)
     embed.add_field(name="", value="`MANBOT RANDOM [CATEGORY NAME]` \nSummon a random man. You may supply an optional category name to summon a random man in that category, e.g. MANBOT RANDOM KDRAMA CHARACTER.", inline=False)
     embed.add_field(name="", value="`MANBOT STATS [MAN/CATEGORY NAME]` \nView Manbot's top most popular men. You may optionally supply a man or category name to see their stats, e.g. MANBOT STATS KPOP.", inline=False)
     embed.add_field(name="\nUser Commands:", value="", inline=False)
@@ -51,7 +51,7 @@ def get_list_categories_embed(ctx):
         for c in all_categories:
             output += c + "\n"
         embed.add_field(name="", value=output, inline=False)
-        embed.set_footer(text="Call MANBOT CATEGORIES [CATEGORY NAME] to list all subcategories for that category.")
+        embed.set_footer(text="Call MANBOT LIST CATEGORIES [CATEGORY NAME] to list all subcategories for that category.")
     return embed
 
 # return list of men in a supplied category
@@ -67,7 +67,7 @@ def get_list_men_embed(ctx):
         embed.add_field(name="", value=output, inline=False)
     else:
         embed = discord.Embed(title="HEY",
-                              description="Manbot has too many men to be displayed in a single embed. To view the men in a category, type MANBOT MEN followed by the category name, e.g. MANBOT MEN KPOP.",
+                              description="Manbot has too many men to be displayed in a single embed. To view the men in a category, type MANBOT LIST MEN followed by the category name, e.g. MANBOT LIST MEN KPOP.",
                               color=purple)
     return embed
 

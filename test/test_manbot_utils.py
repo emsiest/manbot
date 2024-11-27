@@ -43,6 +43,8 @@ class TestManbotUtils(unittest.TestCase):
 		self.assertTrue(ManbotUtils.check_typo(mock_message).endswith(":wink:"))
 		mock_message = MagicMock(content="ZHANG ZEHHNA")
 		self.assertIsNone(ManbotUtils.check_typo(mock_message))
+		mock_message = MagicMock(content="Xu Si")
+		self.assertIsNone(ManbotUtils.check_typo(mock_message))
 
 if __name__ == '__main__':
 	unittest.main()

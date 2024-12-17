@@ -48,6 +48,7 @@ class ManbotUtils:
 
 	@staticmethod
 	def clean_message(message):
+		# strips all punctuation
 		message.content = message.content.translate(str.maketrans('', '', string.punctuation))
 		return
 

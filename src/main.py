@@ -104,13 +104,6 @@ async def on_message(message):
     if (message.author == bot.user) or (message.author.id == 834302490106789918):
         return
 
-    # check for typos and bonks users if typo detected
-    ManbotUtils.clean_message(message)
-    has_typo = ManbotUtils.check_typo(message)
-    if has_typo:
-        await message.channel.send(has_typo)
-        return
-
     # check commands here
     await bot.process_commands(message)
 
@@ -118,6 +111,13 @@ async def on_message(message):
         man_message = get_man(message)
         if man_message:
             await message.channel.send(get_man(message))
-        return
+            return
+        else:
+            # check for typos and bonks users if typo detected
+            ManbotUtils.clean_message(message)
+            has_typo = ManbotUtils.check_typo(message)
+            if has_typo:
+                await message.channel.send(has_typo)
+                return
 
 bot.run(TOKEN)

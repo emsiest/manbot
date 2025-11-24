@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from general_commands import (get_help_embed, get_list_categories_embed, get_list_men_embed, get_stats_embed,
                               get_hello_embed, get_sleep_embed, get_work_embed)
 from man_commands import (get_random_embed, get_man)
-from user_commands import (get_disable_embed, get_enable_embed, get_my_categories_embed, get_my_men_embed, get_reset_embed)
 from manbot_utils import ManbotUtils
 
 load_dotenv()
@@ -26,17 +25,13 @@ async def on_ready():
 '''
 Command Stubs
 '''
-@bot.command(name="CATEGORIES")
+@bot.command(name="CATEGORY")
 async def categories_command(ctx):
     await ctx.send(embed=get_list_categories_embed(ctx))
 
-@bot.command(name="DISABLE")
-async def disable_command(ctx):
-    await ctx.send(embed=get_disable_embed(ctx))
-
-@bot.command(name="ENABLE")
-async def enable_command(ctx):
-    await ctx.send(embed=get_enable_embed(ctx))
+@bot.command(name="CATEGORIES")
+async def categories_command(ctx):
+    await ctx.send(embed=get_list_categories_embed(ctx))
 
 @bot.command("HELLO")
 async def hello_command(ctx):
@@ -48,33 +43,24 @@ async def help_command(ctx):
 
 @bot.command("LIST")
 async def my_command(ctx):
-    if ctx.message.content.startswith("MANBOT LIST CATEGORIES"):
+    if ctx.message.content.startswith("MANBOT LIST CATEGORIES") or ctx.message.content.startswith("MANBOT LIST CATEGORY"):
         await ctx.send(embed=get_list_categories_embed(ctx))
     if ctx.message.content.startswith("MANBOT LIST MEN"):
         await ctx.send(embed=get_list_men_embed(ctx))
+    else:
+        await ctx.send("Please use 'MANBOT LIST CATEGORIES' or 'MANBOT LIST MEN'.")
 
 @bot.command("MAN")
 async def man_command(ctx):
-    await ctx.send("Hey " + ctx.message.author.mention + " the correct command is MANBOT MEN <CATEGORY NAME>, e.g. MANBOT MEN ANIME.")
+    await ctx.send(embed=get_list_men_embed(ctx))
 
 @bot.command(name="MEN")
 async def men_command(ctx):
     await ctx.send(embed=get_list_men_embed(ctx))
 
-@bot.command("MY")
-async def my_command(ctx):
-    if "MANBOT MY CATEGORIES" == ctx.message.content:
-        await ctx.send(embed=get_my_categories_embed(ctx))
-    if "MANBOT MY MEN" == ctx.message.content:
-        await ctx.send(embed=get_my_men_embed(ctx))
-
 @bot.command("RANDOM")
 async def random_command(ctx):
     await ctx.send(embed=get_random_embed(ctx))
-
-@bot.command("RESET")
-async def reset_command(ctx):
-    await ctx.send(embed=get_reset_embed(ctx))
 
 @bot.command("SLEEP")
 async def sleep_command(ctx):
@@ -114,7 +100,7 @@ async def on_message(message):
             return
         else:
             # check for typos and bonks users if typo detected
-            ManbotUtils.clean_message(message)
+            message = ManbotUtils.clean_message(message)
             has_typo = ManbotUtils.check_typo(message)
             if has_typo:
                 await message.channel.send(has_typo)

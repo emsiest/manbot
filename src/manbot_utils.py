@@ -50,7 +50,7 @@ class ManbotUtils:
 	def clean_message(message):
 		# strips all punctuation
 		message.content = message.content.translate(str.maketrans('', '', string.punctuation))
-		return
+		return message.content
 
 	@staticmethod
 	# check for misspelled man names and bonk user if typo detected

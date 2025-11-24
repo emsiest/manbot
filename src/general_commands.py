@@ -23,12 +23,6 @@ def get_help_embed(ctx):
     embed.add_field(name="", value="`MANBOT LIST MEN <CATEGORY NAME>` \nView names of all currently summonable men in a category. You must supply a category name to list all men in that category, e.g. MANBOT LIST MEN KDRAMA ACTOR.",inline=False)
     embed.add_field(name="", value="`MANBOT RANDOM [CATEGORY NAME]` \nSummon a random man. You may supply an optional category name to summon a random man in that category, e.g. MANBOT RANDOM KDRAMA CHARACTER.", inline=False)
     embed.add_field(name="", value="`MANBOT STATS [MAN/CATEGORY NAME]` \nView Manbot's top most popular men. You may optionally supply a man or category name to see their stats, e.g. MANBOT STATS KPOP.", inline=False)
-    embed.add_field(name="\nUser Commands:", value="", inline=False)
-    embed.add_field(name="", value="`MANBOT DISABLE <MAN/CATEGORY NAME>` \nDisable a man or category for yourself. You must supply a man or category name, e.g. MANBOT DISABLE CDRAMA ACTOR.", inline=False)
-    embed.add_field(name="", value="`MANBOT ENABLE <MAN/CATEGORY NAME>` \nEnable a man or category for yourself. You must supply a man or category name, e.g. MANBOT ENABLE CDRAMA CHARACTER.", inline=False)
-    embed.add_field(name="", value="`MANBOT MY CATEGORIES` \nView the categories you have enabled/disabled.",inline=False)
-    embed.add_field(name="", value="`MANBOT MY MEN` \nView the men you have disabled.",inline=False)
-    embed.add_field(name="", value="`MANBOT RESET` \nReset all your Manbot data and settings. This action cannot be undone!",inline=False)
     embed.add_field(name="\nOther Commands:", value="", inline=False)
     embed.add_field(name="", value="`MANBOT HELLO` \nReceive a greeting.", inline=False)
     embed.add_field(name="", value="`MANBOT SLEEP` \nReceive a loving bedtime message.", inline=False)
@@ -62,6 +56,10 @@ def get_list_men_embed(ctx):
         embed = discord.Embed(title=category + " MEN",
                               color=purple)
         output = ""
+        if category == "CDRAMA":
+            category = "CDRAMA ACTOR"
+        if category == "KDRAMA":
+            category = "KDRAMA ACTOR"
         for m in all_categories[category][0]["men"]:
             output += m + "\n"
         embed.add_field(name="", value=output, inline=False)
@@ -69,6 +67,10 @@ def get_list_men_embed(ctx):
         embed = discord.Embed(title="HEY",
                               description="Manbot has too many men to be displayed in a single embed. To view the men in a category, type MANBOT LIST MEN followed by the category name, e.g. MANBOT LIST MEN KPOP.",
                               color=purple)
+        output = ""
+        for c in all_categories:
+            output += c + "\n"
+        embed.add_field(name="", value=output, inline=False)
     return embed
 
 # helper to retrieve stats for given man

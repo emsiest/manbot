@@ -25,22 +25,6 @@ Summon a random man. You may supply an optional category name to summon a random
 
 View Manbot's top most popular men. You may optionally supply a man or category name to see their stats, e.g. ```MANBOT STATS KPOP```.
 
-```MANBOT DISABLE```
-
-Disable a man or category for yourself. You must supply a man or category name, e.g. ```MANBOT DISABLE CDRAMA ACTOR```.
-
-```MANBOT ENABLE```
-
-Enable a man or category for yourself. You must supply a man or category name, e.g. ```MANBOT ENABLE CDRAMA CHARACTER```.
-
-```MANBOT MY CATEGORIES```
-
-View the categories you have enabled/disabled.
-
-```MANBOT MY MEN```
-
-View the men you have disabled.
-
 ```MANBOT RESET```
 
 Reset all your Manbot data and settings. This action cannot be undone!

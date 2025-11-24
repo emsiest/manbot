@@ -36,6 +36,7 @@ class TestManbotUtils(unittest.TestCase):
 
 	def test_clean_message(self):
 		mock_message = MagicMock(content="hello??")
+		print(ManbotUtils.clean_message(mock_message))
 		self.assertEqual(ManbotUtils.clean_message(mock_message), "hello")
 
 	def test_check_typo(self):
